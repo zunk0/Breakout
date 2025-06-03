@@ -60,8 +60,18 @@ while running:
             ff += 1
         else:
             x1 += 100
-
-    pygame.display.flip()
+    
+    # x1 = 0
+    # y1 = 0
+    # ff = 0
+    # for i in range(28):  # Presne 28 obdĺžnikov
+    #     pygame.draw.rect(screen, f[ff], [x1, y1, sirka1, vyska1], border_radius=10)
+    #     x1 += 100  # Posun na ďalší stĺpec
+    #     if (i + 1) % 7 == 0:  # Po každom 7. obdĺžniku
+    #         x1 = 0  # Začiatok nového riadku
+    #         y1 += 50  # Posun na ďalší riadok
+    #         ff = (ff + 1) % len(f)  # Zmena farby (cyklicky)
+    #     pygame.display.flip()
 
 # Ukončenie
 pygame.quit()
