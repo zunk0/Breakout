@@ -3,6 +3,7 @@ import pygame
 import random
 import sys
 import time
+import math
 
 # Inicializácia
 pygame.init()
@@ -11,8 +12,8 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Pohyb kruhu šípkami")
 
 # Konštanty
-BALL_SPEED = 4
-PADDLE_SPEED = 4
+BALL_SPEED = 1.5
+PADDLE_SPEED = 1.5
 COLORS = [(80, 120, 255), (255, 80, 80), (255, 220, 80), (80, 220, 120)]  # blue, red, yellow, green (podobné obrázku)
 BROWN = (120, 100, 60)
 LIGHT_BROWN = (180, 140, 80)
@@ -202,8 +203,10 @@ while running:
                             rectangles.remove(rect)
                     else:
                         if rect[5]:  # plus
-                            new_speed_x = -BALL_SPEED if ball.speed_x > 0 else BALL_SPEED
-                            new_speed_y = ball.speed_y
+                            # Vytvorenie náhodného uhla pre novú guličku
+                            uhol = random.uniform(0, 2 * 3.14159)  # náhodný uhol v radiánoch
+                            new_speed_x = BALL_SPEED * math.cos(uhol)
+                            new_speed_y = BALL_SPEED * math.sin(uhol)
                             new_ball = Ball(ball.x, ball.y, new_speed_x, new_speed_y)
                             balls.append(new_ball)
                             ball.speed_x, ball.speed_y = normalize_speed(ball.speed_x, ball.speed_y, BALL_SPEED)
