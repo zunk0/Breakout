@@ -10,8 +10,8 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Pohyb kruhu šípkami")
 
 # Konštanty
-BALL_SPEED = 2
-PADDLE_SPEED = 2
+BALL_SPEED = 4
+PADDLE_SPEED = 4
 COLORS = [(80, 120, 255), (255, 80, 80), (255, 220, 80), (80, 220, 120)]  # blue, red, yellow, green (podobné obrázku)
 BROWN = (120, 100, 60)
 LIGHT_BROWN = (180, 140, 80)
@@ -90,6 +90,7 @@ won = False
 game_over = False
 restart_rect = None
 start_time = time.time()
+final_time = None  # Add variable to store final time
 
 running = True
 while running:
@@ -121,9 +122,10 @@ while running:
         pygame.draw.circle(screen, LIFE_COLOR, center, life_radius, 2)      # obvod vždy svieti
 
     # Časovač vpravo dole
-    elapsed = int(time.time() - start_time)
-    time_text = pygame.font.Font(None, 36).render(f"{elapsed}s", True, WHITE)
-    screen.blit(time_text, (width - time_text.get_width() - 10, height - 60))
+    if not game_over and not won:
+        elapsed = int(time.time() - start_time)
+        time_text = pygame.font.Font(None, 36).render(f"{elapsed}s", True, WHITE)
+        screen.blit(time_text, (width - time_text.get_width() - 10, height - 60))
 
     for rect in rectangles:
         pygame.draw.rect(screen, rect[4], rect[:4], border_radius=10)
@@ -228,13 +230,14 @@ while running:
                     spawn_timer = None
             else:
                 game_over = True
+                final_time = int(time.time() - start_time)  # Store final time when game over
         if not rectangles:
             won = True
+            final_time = int(time.time() - start_time)  # Store final time when won
 
     # GAME OVER
     if game_over:
-        elapsed = int(time.time() - start_time)
-        time_text = font_life.render(f"{elapsed}s", True, WHITE)
+        time_text = font_life.render(f"{final_time}s", True, WHITE)
         screen.blit(time_text, ((width - time_text.get_width()) // 2, (height - font_big.get_height()) // 2 - 60))
         text = font_big.render("GAME OVER", True, GAME_OVER_COLOR)
         screen.blit(text, ((width - text.get_width()) // 2, (height - text.get_height()) // 2))
@@ -243,8 +246,7 @@ while running:
         screen.blit(restart_text, restart_rect)
     # YOU WON
     if won:
-        elapsed = int(time.time() - start_time)
-        time_text = font_life.render(f"{elapsed}s", True, WHITE)
+        time_text = font_life.render(f"{final_time}s", True, WHITE)
         screen.blit(time_text, ((width - time_text.get_width()) // 2, (height - font_big.get_height()) // 2 - 60))
         text = font_big.render("YOU WON", True, WIN_COLOR)
         screen.blit(text, ((width - text.get_width()) // 2, (height - text.get_height()) // 2))
@@ -276,6 +278,7 @@ while running:
                     spawn_timer = None
                     won = False
                     game_over = False
+                    final_time = None  # Reset final time
                     # Vytvorenie obdĺžnikov nanovo
                     rectangles.clear()
                     all_positions = list(range(28))
