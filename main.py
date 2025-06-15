@@ -1,3 +1,4 @@
+# urob aby nahodne sa spawnula lopticka skus to urobit do class a jednoduchsie a slovensky
 import pygame
 import random
 import sys
