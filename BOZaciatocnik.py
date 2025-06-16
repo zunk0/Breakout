@@ -17,42 +17,36 @@ class BreakoutHra:
         self.root = root
         self.root.title("Breakout Hra")
         
-        # Konštanty
         self.SIRKA = 690
         self.VYSKA = 600
         self.RYCHLOST_LOPTY = 5
         self.RYCHLOST_PALICKY = 30
-        self.FARBY = ["#5078FF", "#FF5050", "#FFDC50", "#50DC78"]  # modrá, červená, žltá, zelená
+        self.FARBY = ["#5078FF", "#FF5050", "#FFDC50", "#50DC78"]
         self.HNEDA = "#78643C"
         self.SVETLA_HNEDA = "#B48C50"
         self.POZADIE = "#181420"
         self.BIELA = "#FFFFFF"
         self.TMAVE_FARBY = ["#283C80", "#802828", "#806E28", "#286E3C"]
 
-        # Vytvorenie plátna
         self.platno = tk.Canvas(root, width=self.SIRKA, height=self.VYSKA, bg=self.POZADIE)
         self.platno.pack()
 
-        # Herné premenné
         self.palicka_x = self.SIRKA // 2 - 50
         self.palicka_y = self.VYSKA * 0.8
         self.palicka_sirka = 100
         self.palicka_vyska = 25
         
-        # Premenné pre zmenšenie paličky
         self.cas_zmeny = 0
         self.je_zmensena = False
         self.povodna_sirka = self.palicka_sirka
         self.znizena_sirka = 50
         
-        # Životy
         self.zivoty = 3
         self.polomer_zivota = 14
         self.medzera_zivotov = 10
         self.zivot_y = self.VYSKA - 30
         self.zivot_x_start = 30
 
-        # Herný stav
         self.lopty = [Lopta(self.SIRKA // 2, self.VYSKA // 2, 0, self.RYCHLOST_LOPTY)]
         self.casovac = None
         self.vyhra = False
@@ -60,15 +54,12 @@ class BreakoutHra:
         self.start_cas = time.time()
         self.konecny_cas = None
 
-        # Vytvorenie blokov
         self.vytvor_bloky()
 
-        # Pridanie ovládania
         self.root.bind("<Left>", self.pohyb_vlavo)
         self.root.bind("<Right>", self.pohyb_vpravo)
         self.root.bind("<Button-1>", self.kontrola_restartu)
 
-        # Spustenie hernej slučky
         self.aktualizuj()
 
     def vytvor_bloky(self):
@@ -137,14 +128,12 @@ class BreakoutHra:
     def aktualizuj(self):
         self.platno.delete("all")
 
-        # Kontrola zmenšenia paličky
         if self.je_zmensena and time.time() - self.cas_zmeny >= 5:
             self.je_zmensena = False
             delta = (self.povodna_sirka - self.palicka_sirka) // 2
             self.palicka_x -= delta
             self.palicka_sirka = self.povodna_sirka
 
-        # Kreslenie životov
         for i in range(3):
             stred_x = self.zivot_x_start + i * (self.polomer_zivota * 2 + self.medzera_zivotov)
             if i < self.zivoty:
@@ -159,7 +148,6 @@ class BreakoutHra:
                 outline=self.BIELA, width=2
             )
 
-        # Kreslenie času
         if not self.koniec and not self.vyhra:
             uplynuly_cas = int(time.time() - self.start_cas)
             self.platno.create_text(
@@ -169,33 +157,31 @@ class BreakoutHra:
                 font=("Arial", 18)
             )
 
-        # Kreslenie blokov
         for blok in self.bloky:
             self.platno.create_rectangle(
                 blok[0], blok[1],
                 blok[0] + blok[2], blok[1] + blok[3],
                 fill=blok[4], outline=blok[4]
             )
-            if blok[5]:  # plus
+            if blok[5]:
                 self.platno.create_text(
                     blok[0] + blok[2] // 2, blok[1] + blok[3] // 2,
                     text="+", fill=self.TMAVE_FARBY[self.FARBY.index(blok[4]) if blok[4] in self.FARBY else 0],
                     font=("Arial", 22)
                 )
-            elif blok[6]:  # hnedá
+            elif blok[6]:
                 self.platno.create_text(
                     blok[0] + blok[2] // 2, blok[1] + blok[3] // 2,
                     text="STONE", fill=self.TMAVE_FARBY[0],
                     font=("Arial", 16)
                 )
-            elif blok[7]:  # zmenšenie
+            elif blok[7]:
                 self.platno.create_text(
                     blok[0] + blok[2] // 2, blok[1] + blok[3] // 2,
                     text="><", fill=self.TMAVE_FARBY[self.FARBY.index(blok[4]) if blok[4] in self.FARBY else 0],
                     font=("Arial", 22)
                 )
 
-        # Kreslenie paličky
         self.platno.create_rectangle(
             self.palicka_x, self.palicka_y,
             self.palicka_x + self.palicka_sirka, self.palicka_y + self.palicka_vyska,
@@ -207,7 +193,6 @@ class BreakoutHra:
                 lopta.x += lopta.rychlost_x
                 lopta.y += lopta.rychlost_y
 
-                # Kolízie so stenami
                 if lopta.x - lopta.polomer <= 0:
                     lopta.x = lopta.polomer + 1
                     lopta.rychlost_x *= -1
@@ -218,38 +203,35 @@ class BreakoutHra:
                     lopta.y = lopta.polomer + 1
                     lopta.rychlost_y *= -1
 
-                # Kolízia s paličkou
                 if (lopta.y + lopta.polomer >= self.palicka_y and lopta.y - lopta.polomer <= self.palicka_y + self.palicka_vyska and
                     lopta.x + lopta.polomer >= self.palicka_x and lopta.x - lopta.polomer <= self.palicka_x + self.palicka_sirka):
                     uhol_odrazu = ((lopta.x - self.palicka_x) / self.palicka_sirka - 0.5) * 2
                     lopta.rychlost_x = uhol_odrazu * self.RYCHLOST_LOPTY
                     lopta.rychlost_y = -self.RYCHLOST_LOPTY
 
-                # Stratená lopta
                 if lopta.y - lopta.polomer > self.palicka_y + self.palicka_vyska:
                     self.lopty.remove(lopta)
                     continue
 
-                # Kolízie s blokmi
                 for blok in self.bloky[:]:
                     if (blok[0] < lopta.x < blok[0] + blok[2] and 
                         blok[1] < lopta.y < blok[1] + blok[3]):
                         lopta.rychlost_y *= -1
                         
-                        if blok[6]:  # hnedá
+                        if blok[6]:
                             blok[8] += 1
                             if blok[8] == 1:
                                 blok[4] = self.SVETLA_HNEDA
                             elif blok[8] >= 2:
                                 self.bloky.remove(blok)
                         else:
-                            if blok[5]:  # plus
+                            if blok[5]:
                                 uhol = random.uniform(0, 2 * math.pi)
                                 nova_rychlost_x = self.RYCHLOST_LOPTY * math.cos(uhol)
                                 nova_rychlost_y = self.RYCHLOST_LOPTY * math.sin(uhol)
                                 nova_lopta = Lopta(lopta.x, lopta.y, nova_rychlost_x, nova_rychlost_y)
                                 self.lopty.append(nova_lopta)
-                            elif blok[7]:  # zmenšenie
+                            elif blok[7]:
                                 self.je_zmensena = True
                                 self.cas_zmeny = time.time()
                                 delta = (self.palicka_sirka - self.znizena_sirka) // 2
@@ -257,14 +239,12 @@ class BreakoutHra:
                                 self.palicka_sirka = self.znizena_sirka
                             self.bloky.remove(blok)
 
-                # Kreslenie lopty
                 self.platno.create_oval(
                     lopta.x - lopta.polomer, lopta.y - lopta.polomer,
                     lopta.x + lopta.polomer, lopta.y + lopta.polomer,
                     fill=lopta.farba, outline=""
                 )
 
-        # Kontrola herného stavu
         if not self.koniec and not self.vyhra:
             if not self.lopty:
                 if self.zivoty > 0:
@@ -281,7 +261,6 @@ class BreakoutHra:
                 self.vyhra = True
                 self.konecny_cas = int(time.time() - self.start_cas)
 
-        # Obrazovka konca hry
         if self.koniec:
             self.platno.create_text(
                 self.SIRKA // 2, self.VYSKA // 2,
@@ -297,7 +276,6 @@ class BreakoutHra:
             )
             self.restart_obdlznik = True
 
-        # Obrazovka výhry
         if self.vyhra:
             self.platno.create_text(
                 self.SIRKA // 2, self.VYSKA // 2 - 60,
@@ -319,8 +297,7 @@ class BreakoutHra:
             )
             self.restart_obdlznik = True
 
-        # Naplánovanie ďalšej aktualizácie
-        self.root.after(16, self.aktualizuj)  # Približne 60 FPS
+        self.root.after(16, self.aktualizuj)
 
 root = tk.Tk()
 hra = BreakoutHra(root)
